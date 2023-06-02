@@ -170,4 +170,6 @@ public interface ISysRoleService
      * @return 结果
      */
     public int insertAuthUsers(Long roleId, Long[] userIds);
+
+    public int insertDefaultRole(Long userId);
 }

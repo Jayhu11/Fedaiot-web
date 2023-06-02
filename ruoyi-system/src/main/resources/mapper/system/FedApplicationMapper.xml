@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.FedApplicationMapper">
+    
+    <resultMap type="FedApplication" id="FedApplicationResult">
+        <result property="applicationId"    column="application_id"    />
+        <result property="applicationName"    column="application_name"    />
+        <result property="userId"    column="user_id"    />
+        <result property="configuration"    column="configuration"    />
+    </resultMap>
+
+    <sql id="selectFedApplicationVo">
+        select application_id, application_name, user_id, configuration from fed_application
+    </sql>
+
+    <select id="selectFedApplicationList" parameterType="FedApplication" resultMap="FedApplicationResult">
+        <include refid="selectFedApplicationVo"/>
+        <where>  
+            <if test="applicationName != null  and applicationName != ''"> and application_name like concat('%', #{applicationName}, '%')</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="configuration != null  and configuration != ''"> and configuration = #{configuration}</if>
+        </where>
+    </select>
+    
+    <select id="selectFedApplicationByApplicationId" parameterType="Long" resultMap="FedApplicationResult">
+        <include refid="selectFedApplicationVo"/>
+        where application_id = #{applicationId}
+    </select>
+        
+    <insert id="insertFedApplication" parameterType="FedApplication" useGeneratedKeys="true" keyProperty="applicationId">
+        insert into fed_application
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="applicationName != null">application_name,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="configuration != null">configuration,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="applicationName != null">#{applicationName},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="configuration != null">#{configuration},</if>
+         </trim>
+    </insert>
+
+    <update id="updateFedApplication" parameterType="FedApplication">
+        update fed_application
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="applicationName != null">application_name = #{applicationName},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="configuration != null">configuration = #{configuration},</if>
+        </trim>
+        where application_id = #{applicationId}
+    </update>
+
+    <delete id="deleteFedApplicationByApplicationId" parameterType="Long">
+        delete from fed_application where application_id = #{applicationId}
+    </delete>
+
+    <delete id="deleteFedApplicationByApplicationIds" parameterType="String">
+        delete from fed_application where application_id in 
+        <foreach item="applicationId" collection="array" open="(" separator="," close=")">
+            #{applicationId}
+        </foreach>
+    </delete>
+</mapper>

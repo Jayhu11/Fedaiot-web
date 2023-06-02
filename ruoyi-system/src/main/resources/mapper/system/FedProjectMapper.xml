@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.FedProjectMapper">
+    
+    <resultMap type="FedProject" id="FedProjectResult">
+        <result property="projectId"    column="project_id"    />
+        <result property="projectName"    column="project_name"    />
+        <result property="groupId"    column="group_id"    />
+        <result property="userId"    column="user_id"    />
+    </resultMap>
+
+    <resultMap id="FedProjectProjectApplicationResult" type="FedProject" extends="FedProjectResult">
+        <collection property="projectApplicationList" notNullColumn="sub_paid" javaType="java.util.List" resultMap="ProjectApplicationResult" />
+    </resultMap>
+
+    <resultMap type="ProjectApplication" id="ProjectApplicationResult">
+        <result property="paid"    column="sub_paid"    />
+        <result property="projectid"    column="sub_projectid"    />
+        <result property="applicationid"    column="sub_applicationid"    />
+    </resultMap>
+
+    <sql id="selectFedProjectVo">
+        select project_id, project_name, group_id, user_id from fed_project
+    </sql>
+
+    <select id="selectFedProjectList" parameterType="FedProject" resultMap="FedProjectResult">
+        <include refid="selectFedProjectVo"/>
+        <where>  
+            <if test="projectName != null  and projectName != ''"> and project_name like concat('%', #{projectName}, '%')</if>
+            <if test="groupId != null "> and group_id = #{groupId}</if>
+            <if test="userId != null "> and user_id = #{userId}</if>
+        </where>
+    </select>
+    
+    <select id="selectFedProjectByProjectId" parameterType="Long" resultMap="FedProjectProjectApplicationResult">
+        select a.project_id, a.project_name, a.group_id, a.user_id,
+ b.paid as sub_paid, b.projectid as sub_projectid, b.applicationid as sub_applicationid
+        from fed_project a
+        left join project_application b on b.projectid = a.project_id
+        where a.project_id = #{projectId}
+    </select>
+        
+    <insert id="insertFedProject" parameterType="FedProject" useGeneratedKeys="true" keyProperty="projectId">
+        insert into fed_project
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="projectName != null">project_name,</if>
+            <if test="groupId != null">group_id,</if>
+            <if test="userId != null">user_id,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="projectName != null">#{projectName},</if>
+            <if test="groupId != null">#{groupId},</if>
+            <if test="userId != null">#{userId},</if>
+         </trim>
+    </insert>
+
+    <update id="updateFedProject" parameterType="FedProject">
+        update fed_project
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="projectName != null">project_name = #{projectName},</if>
+            <if test="groupId != null">group_id = #{groupId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+        </trim>
+        where project_id = #{projectId}
+    </update>
+
+    <delete id="deleteFedProjectByProjectId" parameterType="Long">
+        delete from fed_project where project_id = #{projectId}
+    </delete>
+
+    <delete id="deleteFedProjectByProjectIds" parameterType="String">
+        delete from fed_project where project_id in 
+        <foreach item="projectId" collection="array" open="(" separator="," close=")">
+            #{projectId}
+        </foreach>
+    </delete>
+    
+    <delete id="deleteProjectApplicationByProjectids" parameterType="String">
+        delete from project_application where projectid in 
+        <foreach item="projectid" collection="array" open="(" separator="," close=")">
+            #{projectid}
+        </foreach>
+    </delete>
+
+    <delete id="deleteProjectApplicationByProjectid" parameterType="Long">
+        delete from project_application where projectid = #{projectid}
+    </delete>
+
+    <insert id="batchProjectApplication">
+        insert into project_application( paid, projectid, applicationid) values
+		<foreach item="item" index="index" collection="list" separator=",">
+            ( #{item.paid}, #{item.projectid}, #{item.applicationid})
+        </foreach>
+    </insert>
+</mapper>

@@ -33,6 +33,7 @@ public class SysRegisterController extends BaseController
             return error("当前系统没有开启注册功能！");
         }
         String msg = registerService.register(user);
+//        roleService.insertDefaultRole(user.getUserId());
         return StringUtils.isEmpty(msg) ? success() : error(msg);
     }
 }

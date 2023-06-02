@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.system.mapper.UserRelationMapper">
+    
+    <resultMap type="UserRelation" id="UserRelationResult">
+        <result property="urId"    column="ur_id"    />
+        <result property="myId"    column="my_id"    />
+        <result property="userId"    column="user_id"    />
+        <result property="myName"    column="my_name"    />
+        <result property="userName"    column="user_name"    />
+    </resultMap>
+
+    <sql id="selectUserRelationVo">
+        select ur_id, my_id, user_id, my_name, user_name from user_relation
+    </sql>
+
+    <select id="selectUserRelationList" parameterType="UserRelation" resultMap="UserRelationResult">
+        <include refid="selectUserRelationVo"/>
+        <where>  
+            <if test="userId != null "> and user_id = #{userId}</if>
+            <if test="myId != null "> and my_id = #{myId}</if>
+            <if test="userName != null  and userName != ''"> and user_name like concat('%', #{userName}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectUserRelationByUrId" parameterType="Long" resultMap="UserRelationResult">
+        <include refid="selectUserRelationVo"/>
+        where ur_id = #{urId}
+    </select>
+        
+    <insert id="insertUserRelation" parameterType="UserRelation" useGeneratedKeys="true" keyProperty="urId">
+        insert into user_relation
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="myId != null">my_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="myName != null">my_name,</if>
+            <if test="userName != null and userName != ''">user_name,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="myId != null">#{myId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="myName != null">#{myName},</if>
+            <if test="userName != null and userName != ''">#{userName},</if>
+         </trim>
+    </insert>
+
+    <update id="updateUserRelation" parameterType="UserRelation">
+        update user_relation
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="myId != null">my_id = #{myId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="myName != null">my_name = #{myName},</if>
+            <if test="userName != null and userName != ''">user_name = #{userName},</if>
+        </trim>
+        where ur_id = #{urId}
+    </update>
+
+    <delete id="deleteUserRelationByUrId" parameterType="Long">
+        delete from user_relation where ur_id = #{urId}
+    </delete>
+
+    <delete id="deleteUserRelationByUrIds" parameterType="String">
+        delete from user_relation where ur_id in 
+        <foreach item="urId" collection="array" open="(" separator="," close=")">
+            #{urId}
+        </foreach>
+    </delete>
+</mapper>

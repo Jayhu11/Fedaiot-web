@@ -421,4 +421,11 @@ public class SysRoleServiceImpl implements ISysRoleService
         }
         return userRoleMapper.batchUserRole(list);
     }
+
+    @Override
+    public int insertDefaultRole(Long userId) {
+
+        return userRoleMapper.insertDefaultRole(userId);
+
+    }
 }

@@ -44,8 +44,23 @@ public class UserRelationController extends BaseController
     public TableDataInfo list(UserRelation userRelation)
     {
         startPage();
+        boolean already_add=false;
         userRelation.setMyId(SecurityUtils.getUserId());
         List<UserRelation> list = userRelationService.selectUserRelationList(userRelation);
+        for (UserRelation userRelation2 : list) {
+            if (userRelation2.getMyId() == userRelation2.getUserId()) {
+                already_add=true;
+                break;
+            }
+        }
+        if(already_add==false){
+            UserRelation userRelation3=new UserRelation();
+            userRelation3.setMyId(SecurityUtils.getUserId());
+            userRelation3.setMyName(SecurityUtils.getUsername());
+            userRelation3.setUserId(SecurityUtils.getUserId());
+            userRelation3.setUserName(SecurityUtils.getUsername());
+            userRelationService.insertUserRelation(userRelation3);
+        }
         return getDataTable(list);
     }
 

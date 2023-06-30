@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.system.mapper.UserRelationMapper">
-    
+
     <resultMap type="UserRelation" id="UserRelationResult">
         <result property="urId"    column="ur_id"    />
         <result property="myId"    column="my_id"    />
@@ -18,18 +18,18 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 
     <select id="selectUserRelationList" parameterType="UserRelation" resultMap="UserRelationResult">
         <include refid="selectUserRelationVo"/>
-        <where>  
+        <where>
             <if test="userId != null "> and user_id = #{userId}</if>
             <if test="myId != null "> and my_id = #{myId}</if>
             <if test="userName != null  and userName != ''"> and user_name like concat('%', #{userName}, '%')</if>
         </where>
     </select>
-    
+
     <select id="selectUserRelationByUrId" parameterType="Long" resultMap="UserRelationResult">
         <include refid="selectUserRelationVo"/>
         where ur_id = #{urId}
     </select>
-        
+
     <insert id="insertUserRelation" parameterType="UserRelation" useGeneratedKeys="true" keyProperty="urId">
         insert into user_relation
         <trim prefix="(" suffix=")" suffixOverrides=",">
@@ -37,13 +37,13 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="userId != null">user_id,</if>
             <if test="myName != null">my_name,</if>
             <if test="userName != null and userName != ''">user_name,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="myId != null">#{myId},</if>
             <if test="userId != null">#{userId},</if>
             <if test="myName != null">#{myName},</if>
             <if test="userName != null and userName != ''">#{userName},</if>
-         </trim>
+        </trim>
     </insert>
 
     <update id="updateUserRelation" parameterType="UserRelation">
@@ -62,7 +62,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </delete>
 
     <delete id="deleteUserRelationByUrIds" parameterType="String">
-        delete from user_relation where ur_id in 
+        delete from user_relation where ur_id in
         <foreach item="urId" collection="array" open="(" separator="," close=")">
             #{urId}
         </foreach>

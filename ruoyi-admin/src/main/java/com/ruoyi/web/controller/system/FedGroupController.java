@@ -27,7 +27,7 @@ import com.ruoyi.common.core.page.TableDataInfo;
 
 /**
  * 队伍管理Controller
- * 
+ *
  * @author ruoyi
  * @date 2023-06-01
  */
@@ -47,12 +47,13 @@ public class FedGroupController extends BaseController
     {
 
         startPage();
-
-        UserGroup s = new UserGroup();
-        s.setUserId(SecurityUtils.getUserId());
-        List<UserGroup> userlist=new ArrayList<>();
-        userlist.add(s);
-        fedGroup.setUserGroupList(userlist);
+        /**
+         UserGroup s = new UserGroup();
+         s.setUserId(SecurityUtils.getUserId());
+         List<UserGroup> userlist=new ArrayList<>();
+         userlist.add(s);
+         */
+        fedGroup.setUserId2(SecurityUtils.getUserId());
 
         List<FedGroup> list = fedGroupService.selectFedGroupList(fedGroup);
         return getDataTable(list);
@@ -108,7 +109,7 @@ public class FedGroupController extends BaseController
      */
     @PreAuthorize("@ss.hasPermi('system:group:remove')")
     @Log(title = "队伍管理", businessType = BusinessType.DELETE)
-	@DeleteMapping("/{groupIds}")
+    @DeleteMapping("/{groupIds}")
     public AjaxResult remove(@PathVariable Long[] groupIds)
     {
         return toAjax(fedGroupService.deleteFedGroupByGroupIds(groupIds));

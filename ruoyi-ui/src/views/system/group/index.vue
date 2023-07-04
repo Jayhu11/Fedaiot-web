@@ -1,16 +1,16 @@
 <template>
   <div class="app-container">
     <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-      <el-form-item label="组id
-" prop="groupId">
-        <el-input
-          v-model="queryParams.groupId"
-          placeholder="请输入组id
-"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+
+      <!--      <el-form-item label="组id" prop="groupId">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.groupId"-->
+      <!--          placeholder="请输入组id"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+
       <el-form-item label="组名
 " prop="groupName">
         <el-input
@@ -21,14 +21,16 @@
           @keyup.enter.native="handleQuery"
         />
       </el-form-item>
-      <el-form-item label="创建者" prop="createBy">
-        <el-input
-          v-model="queryParams.createBy"
-          placeholder="请输入创建者"
-          clearable
-          @keyup.enter.native="handleQuery"
-        />
-      </el-form-item>
+
+      <!--      <el-form-item label="创建者" prop="createBy">-->
+      <!--        <el-input-->
+      <!--          v-model="queryParams.createBy"-->
+      <!--          placeholder="请输入创建者"-->
+      <!--          clearable-->
+      <!--          @keyup.enter.native="handleQuery"-->
+      <!--        />-->
+      <!--      </el-form-item>-->
+
       <el-form-item>
         <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
         <el-button icon="el-icon-refresh" size="mini" @click="resetQuery">重置</el-button>
@@ -86,7 +88,7 @@
 
       <el-table-column label="组名
 " align="center" prop="groupName" />
-      <el-table-column label="创建者" align="center" prop="createBy" />
+      <!--<el-table-column label="创建者" align="center" prop="createBy" /> -->
       <el-table-column label="操作" align="center" class-name="small-padding fixed-width">
         <template slot-scope="scope">
           <el-button
@@ -137,12 +139,26 @@
           <el-table-column label="序号" align="center" prop="index" width="50"/>
           <el-table-column label="用户id" prop="userId" width="150">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.userId" placeholder="请输入用户id" />
+              <el-select v-model="scope.row.userId" placeholder="请选择用户ID" clearable :style="{width: '100%'}">
+                <el-option
+                  v-for="item in relationOptions"
+                  :key="item.userId"
+                  :label="item.userId"
+                  :value="item.userId"
+                ></el-option>
+              </el-select>
             </template>
           </el-table-column>
           <el-table-column label="用户名" prop="userName" width="150">
             <template slot-scope="scope">
-              <el-input v-model="scope.row.userName" placeholder="请输入用户名" />
+              <el-select v-model="scope.row.userName" placeholder="请选择用户名" clearable :style="{width: '100%'}">
+                <el-option
+                  v-for="item in relationOptions"
+                  :key="item.userId"
+                  :label="item.userName"
+                  :value="item.userName"
+                ></el-option>
+              </el-select>
             </template>
           </el-table-column>
         </el-table>
@@ -157,7 +173,7 @@
 
 <script>
 import { listGroup, getGroup, delGroup, addGroup, updateGroup } from "@/api/system/group";
-
+import { listRelation } from "@/api/system/relation";
 export default {
   name: "Group",
   data() {
@@ -192,6 +208,7 @@ export default {
         groupName: null,
         createBy: null
       },
+      relationOptions: [],
       // 表单参数
       form: {},
       // 表单校验
@@ -210,6 +227,11 @@ export default {
         this.groupList = response.rows;
         this.total = response.total;
         this.loading = false;
+      });
+    },
+    getRelation() {
+      listRelation(this.queryParams).then(response => {
+        this.relationOptions = response.rows;
       });
     },
     // 取消按钮
@@ -248,11 +270,13 @@ export default {
       this.reset();
       this.open = true;
       this.title = "添加队伍管理";
+      this.getRelation();
     },
     /** 修改按钮操作 */
     handleUpdate(row) {
       this.reset();
       const groupId = row.groupId || this.ids
+      this.getRelation();
       getGroup(groupId).then(response => {
         this.form = response.data;
         this.userGroupList = response.data.userGroupList;
@@ -291,7 +315,7 @@ export default {
         this.$modal.msgSuccess("删除成功");
       }).catch(() => {});
     },
-	/** 用户-组关联序号 */
+    /** 用户-组关联序号 */
     rowUserGroupIndex({ row, rowIndex }) {
       row.index = rowIndex + 1;
     },

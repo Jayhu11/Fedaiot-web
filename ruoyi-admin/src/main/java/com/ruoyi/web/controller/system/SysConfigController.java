@@ -85,7 +85,7 @@ public class SysConfigController extends BaseController
     {
         if (!configService.checkConfigKeyUnique(config))
         {
-            return error("新增参数'" + config.getConfigName() + "'失败，参数键名已存在");
+            return error("新增参数'" + config.getConfigName() + "'失败，参数键名已存在！");
         }
         config.setCreateBy(getUsername());
         return toAjax(configService.insertConfig(config));
